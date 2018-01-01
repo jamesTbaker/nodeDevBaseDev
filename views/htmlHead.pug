@@ -1,0 +1,15 @@
+-
+	var titleID = title.replace(/ /g, '-').toLowerCase();
+
+doctype html
+html
+	head
+		title= title
+		meta(charset="utf-8")
+		link(rel='stylesheet', href='/stylesheets/normalize.css')
+		link(rel='stylesheet', href='/stylesheets/highlight-js_atom-one-dark.css')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='/javascripts/highlight.9.12.0min..js')
+		script hljs.initHighlightingOnLoad();
+	body(id=titleID)
+		block content

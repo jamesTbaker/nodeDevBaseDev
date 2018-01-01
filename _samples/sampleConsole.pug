@@ -1,0 +1,87 @@
+extends ../htmlHead
+
+block content
+
+	h1= title
+
+	// QUEUE PROCESSING
+	div#queue-processing
+		h2 Queue Processing
+		p#queue-processing_status
+
+		button#queue-processing_button Toggle
+
+
+	// ADD EMAIL TO QUEUE
+	div#add-email
+		h2 Add Email to Queue
+
+
+	// /ADD EMAIL TO QUEUE
+
+	// EMAIL QUEUE
+	div#queue
+
+		h2 Email Queue
+
+		div#container_queue-list-and-message-details
+
+			// MESSAGE LIST
+			div#queue_list
+				h3 Queued Messages
+				p Select id for addtional message details.
+				table
+					thead
+						th Delete?
+						th Archive?
+						th ID
+						th To
+						th Subject
+						th Neso Received
+						th Neso Send
+					tbody
+
+
+			// MESSAGE DETAILS
+			div#queue_message-details
+				h3 Message Details
+				form#form_queue_message-details(name="updateEmail",method="post",action="/update")
+					div.label-and-control.text
+						div.label From
+						div.field-type-indication
+							div.field-type-indicator#field-type-indicator_queue_message-details_from Optional Field
+						div.control
+							input#queue_message-details_from(type='text', aria-describedby=field-type-indicator_queue_message-details_from)
+					div.label-and-control.text
+						div.label To
+						div.field-type-indication
+							div.field-type-indicator#field-type-indicator_queue_message-details_to Optional Field
+						div.control
+							input#queue_message-details_to(type='text', aria-describedby=field-type-indicator_queue_message-details_to)
+					div.label-and-control.text
+						div.label Subject
+						div.field-type-indication
+							div.field-type-indicator#field-type-indicator_queue_message-details_subject Optional Field
+						div.control
+							input#queue_message-details_subject(type='text', aria-describedby=field-type-indicator_queue_message-details_subject)
+					div.label-and-control.textarea
+						div.label Body
+						div.field-type-indication
+							div.field-type-indicator#field-type-indicator_queue_message-details_body Optional Field
+						div.control
+							textarea#queue_message-details_body(aria-describedby=field-type-indicator_queue_message-details_body)
+					div.label-and-control.save-button
+						div.label
+						div.field-type-indication
+							div.field-type-indicator
+						div.control
+							div.update-notice#queue_message-details_update-notice All fields will be overwritten. No reversion possible.
+							button#queue_message-details_button_save Update
+
+			// /MESSAGE DETAILS
+
+	// /EMAIL QUEUE
+	
+
+	script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+	script(src='/javascripts/email/adminConsole.js')

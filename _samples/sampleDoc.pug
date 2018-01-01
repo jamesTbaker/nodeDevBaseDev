@@ -1,0 +1,210 @@
+extends ../htmlHead
+
+block content
+
+	div.documentation
+		h1= title
+		
+		// OVERVIEW
+		div#preface
+
+			p
+				span.label Last Updated
+
+				|: 9/26/2017
+			p
+				span.label Audience
+
+				|: MOS IIT developers who are API users and those who are API admins
+
+			p
+				span.label Purpose
+
+				|: A high-level overview of all aspects of the Neso email API
+
+		// OVERVIEW
+		div#overview
+
+			h2 Overview
+
+			h3 For Developers who are API Users
+
+			ul
+				li Mostly, you'll HTTP POST JSON data for a single email over SSL from a whitelisted domain to #[code /email/send].
+				li Emails are always sent in HTML format, but you don't actually have to include any HTML tags.
+				li Examples here use jQuery to assist with HTTP operations because of jQuery's readability and wide use. However, if you understand your alternate library or non-JavaScript language, then it will likely be apparent how to translate examples of HTTP operations into your desired syntax.
+				li Internal process (a.k.a., what happens when you send your data):
+
+					ul
+						li An attempt will be made to transport the email data to Leviathan, the Museum's SMTP server, which will send the email to the designated recipients. If the attempt is successful, the email data will be archived. If the attempt is unsuccessful, then error data will be recorded internally, the IIT admin will be notified (not by email), and the email data will go into the queue.
+						li Once per minute, for each email in the queue, an attempt will be made to transport the email data to Leviathan.
+
+						//- li If no delivery time is set, then an attempt will be made to transport the email data to Leviathan, the Museum's SMTP server, which will send the email to the designated recipients. If the attempt is successful, the email data will be archived. If the attempt is unsuccessful, then the email data will go into the queue.
+						//- li If a delivery time is set, then the email data will go into the queue.
+						//- li Once per minute, for each email in the queue, if there is no delivery time has been set or if the delivery time is now or in the past, then an attempt will be made to transport the email data to Leviathan.
+						li For each queued email that is transported to Leviathan, the email is deleted from the queue and archived.
+						li For each queued email that cannot be transported to Leviathan, error data will be recorded internally and the IIT admin will be notified (not by email).
+				li This API does not (yet?) handle:
+					ul
+						li CC
+						li BCC
+						li attachments
+						li multiple emails in one POST request
+						li anything else that isn't explicitly documented below
+				li There is no plan to handle multiple emails in one POST request. Handling only one email per POST request means that, for each email attempt, we can return a discrete response indicating the results of the attempt, and it is easy for users to match up the email and the result (rather than responding with an array of results).
+
+			h3 For API Admin
+
+			ul
+				li #[span.reference app.js] instructs Express that all requests to #[code /email] should use the email route, only after using #[span.reference cors] node module and #[span.reference neso_modules/nesoEmail.js] neso module to ensure that the requesting domain is in the whitelist in the db.
+				li #[span.reference routes/email.js] handles HTTP request events by calling functions in #[span.reference neso_modules/nesoEmail.js] and passing back an HTTP response.
+				li #[span.reference neso_modules/nesoEmail.js] uses #[span.reference nodemailer] node module with settings stored in mongoDB database #[span.reference #{'['}prod#{']'}_neso] to transport email data from Neso to Leviathan, the Museum's SMTP server.
+				li #[span.reference neso_modules/nesoDBQueries.js] uses #[span.reference neso_modules/nesoDBConnection.js] to access mongoDB database #[span.reference #{'['}prod#{']'}_neso].
+				li #[span.reference neso_modules/nesoEmail.js] uses #[span.reference neso_modules/nesoDBQueries.js] to perform operations on mongoDB database #[span.reference #{'['}prod#{']'}_neso].
+				li See #[span.reference package.json] for additional dependencies.
+				li See #[code /#{'['}something-to-come#{']'}] for more general Neso documentation.
+
+
+		
+		// GETTING STARTED
+		div#getting-started
+
+			h2 Getting Started
+
+			h3 WhiteListing
+
+			p First, the domain from which requests will be sent must be whitelisted. Please submit a Network Access Request; in the space dedicated to Intranet access, indicate that you're seeking "write access" to "neso email API" and include the domain from which requests will be made in the Additional Information section.
+			
+			p Neso will not respond to requests from domains not in the whitelist. There will be no HTTP status code to diagnose. If you're using a library (e.g., jQuery), your library may indicate a "response" or other "result" of #[code 0], but this varies by library.
+
+
+
+
+
+
+
+
+			h3 Request Body
+
+			p Notes:
+				ul
+					li The parent is an object containing properties corresponding to the properties of one and only one email.
+					li One email may have multiple, comma-deliminted #[code emails] email addresses
+					li All object property values are strings.
+					ll Object property values are not modified prior to processing. Recommended: use single quotes around strings so that they may include unescaped double quotes (or vice-versa).
+
+			h4 Minimal
+
+			pre
+				code(style='white-space:pre;' class='javascript')
+					|{ 
+					|	'to': 'to1@example.com,to2@example.com,to3@example.com',
+					|	'from': '"Fred Foo 👻" &lt;foo@blurdybloop.com&gt;'
+					|	'subject': 'Email Subject',
+					|	'html': '&lt;p&gt;This is the &lt;i&gt;fantastic&lt;/i&gt; body of an HTML &lt;b&gt;test&lt;/b&gt; message sent through &lt;a href="http://neso.mos.org"&gt;Neso&lt;/a&gt; to Leviathan to your inbox.&lt;/p&gt;'
+					|}
+
+
+			h4 Robust
+
+			p Some additional properties are allowed but not required. These do not affect email sending, but enable filtering if we need to locate an email in the queue or in the archive, and may help us trace a particular email back to a system / event that generated the email. The values of these properties are up to you, but they should be strings.
+
+			pre
+				code(style='white-space:pre;' class='javascript')
+					|{ 
+					|	'to': 'to1@example.com,to2@example.com,to3@example.com',
+					|	'from': '"Fred Foo 👻" &lt;foo@blurdybloop.com&gt;'
+					|	'subject': 'Email Subject',
+					|	'html': '&lt;p&gt;This is the &lt;i&gt;fantastic&lt;/i&gt; body of an HTML &lt;b&gt;test&lt;/b&gt; message sent through &lt;a href="http://neso.mos.org"&gt;Neso&lt;/a&gt; to Leviathan to your inbox.&lt;/p&gt;'
+					|	'system': 'hub'
+					|	'type': 'notification'
+					|	'event': 'beginningOfLife admin'
+					|}
+
+
+			h3 Full Working Example
+
+			p Note: Uses jQuery. To run this example, you'll have to have jQuery installed on your server or added to a browser page.
+
+
+			pre
+				code(style='white-space:pre;' class='javascript')
+					| var email = { 
+					|	'to': 'to1@example.com,to2@example.com,to3@example.com',
+					|	'from': '"Fred Foo 👻" &lt;foo@blurdybloop.com&gt;'
+					|	'subject': 'Email Subject',
+					|	'html': '&lt;p&gt;This is the &lt;i&gt;fantastic&lt;/i&gt; body of an HTML &lt;b&gt;test&lt;/b&gt; message sent through &lt;a href="http://neso.mos.org"&gt;Neso&lt;/a&gt; to Leviathan to your inbox.&lt;/p&gt;'
+					|	'system': 'hub'
+					|	'type': 'notification'
+					|	'event': 'beginningOfLife admin'
+					|}
+					|
+					|var SendEmailToNeso = function(email) {
+					|	$.ajaxSetup({
+					|		error: function(jqXHR, exception) {
+					|			if (jqXHR.status === 0) {
+					|				alert('Could not connect to server.');
+					|			} else if (jqXHR.status == 404) {
+					|				alert('Requested resource not found. [404]');
+					|			} else if (jqXHR.status == 500) {
+					|				alert('Internal Server Error [500].');
+					|			} else if (exception === 'parsererror') {
+					|				alert('Requested JSON parse failed.');
+					|			} else if (exception === 'timeout') {
+					|				alert('Timeout error.');
+					|			} else if (exception === 'abort') {
+					|				alert('Ajax request aborted.');
+					|			} else {
+					|				alert('Uncaught Error.\n' + jqXHR.responseText);
+					|			}
+					|		}
+					|	});
+					|
+					|	$.ajax({
+					|		url: "https://neso.mos.org/email/send",
+					|		type: "POST",
+					|		crossDomain: true,
+					|		contentType: 'application/json',
+					|		data: JSON.stringify(email)
+					|	})
+					|	.done(function(returnData) {
+					|		console.log("got it");
+					|		console.log(returnData);
+					|	})
+					|	.fail(function(error) {
+					|		console.log("no such luck");
+					|		console.log(error);
+					|	});
+					|};
+					|
+					|SendEmailToNeso(email);
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+					//- |
+

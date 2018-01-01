@@ -1,0 +1,303 @@
+
+@charset "UTF-8";
+
+
+
+/******************************************************************
+	GLOBAL
+******************************************************************/
+
+html {
+	font-size: 10px;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: "San Francisco", "Helvetica Neue", Helvetica, Roboto, "Segoe UI", "Segoe", Tahoma, Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size: 1.3rem;
+	line-height: 1.7rem;
+	background-color: #171b23;
+	color: #ddd;
+	padding: 4rem 4rem 0;
+}
+
+div.label-and-control {
+	display: table;
+}
+
+div.label,
+div.field-type-indicator,
+div.control {
+	display: table-cell;
+	vertical-align: top;
+	padding: 1rem 0;
+}
+
+div.label {
+    text-align: right;
+    padding: 1.7rem 1rem 0.3rem;
+    width: 15rem;
+}
+
+div.field-type-indication {
+    width: 0.6rem;
+    text-align: center;
+    padding: 1rem 0.5rem;
+}
+
+div.field-type-indicator {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+div.control {
+    width: 45rem;
+    padding: 1rem;
+}
+
+div.label-and-control.save-button {
+	margin-top: 4rem;
+}
+
+div.update-notice {
+	margin-bottom: 2rem;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+textarea,
+select {
+	box-sizing: border-box;
+	width: 100% !important;
+	height: 3rem;
+	padding: 0.4rem 1rem 0.4rem;
+	border: 0.1rem solid #bbb;
+	background-color: #fff;
+	color: #444;
+}
+
+input[type="file"] {
+	width: 100% !important;
+	padding: 0.3rem;
+	border: 0.1rem solid #bbb;
+	background-color: #fff;
+	color: #444;
+}
+
+textarea {
+	height: 9.6rem;
+}
+
+code,
+div.documentation span.reference {
+	font-family: monospace;
+	font-size: 1.1rem;
+	padding: .2rem .4rem .1rem;
+	white-space: nowrap;
+}
+
+code {
+	color: #aca;
+	background-color: #020;
+}
+
+div.documentation span.reference {
+	color: #ea6;
+	background-color: #310;
+}
+
+
+
+/******************************************************************
+	INDEX
+******************************************************************/
+
+div#screen_index {
+	background-image: url(../images/bacon-cat.jpg);
+	background-position: right top;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	background-color: #0072c6;
+	text-align: left;
+	width: 64.6rem;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	
+	z-index: 9001;
+}
+
+div#screen_index::before {
+	margin-left: 20%;
+	content: "";
+	display: inline-block;
+	height: 100%;
+	margin-right: -2.5px;
+	vertical-align: middle;
+}
+
+div#screen_index div#message {
+	display: inline-block;
+	padding: 5rem;
+	background-color: rgba(255, 216, 0, 0.9);
+	min-width: 20rem;
+	max-width: 35rem;
+	white-space: normal;
+	vertical-align: middle;
+}
+
+div#screen_index div#message a {
+	display: block;
+	margin-bottom: 2rem;
+	text-decoration: none;
+}
+
+div#screen_index div#message a h1 {
+	font-weight: 500;
+	color: #a30c5e;
+	font-size: 4.5rem;
+}
+
+div#screen_index div#message a img {
+	width: 30rem;
+}
+
+div#screen_index div#message p {
+	font-size: 3.5rem;
+	line-height: 4.5rem;
+	color: #333;
+	font-weight: 300;
+}
+
+
+
+/******************************************************************
+	ADMIN EMAIL
+******************************************************************/
+
+/* body#email-admin-console {
+	background-color: #222;
+	color: #ddd;
+	padding: 4rem 4rem 0;
+} */
+
+body#email-admin-console div#queue-processing,
+body#email-admin-console div#add-email,
+body#email-admin-console div#queue,
+body#email-admin-console div#archive {
+	padding-bottom: 4rem;
+}
+
+body#email-admin-console input[type="text"],
+body#email-admin-console input[type="tel"],
+body#email-admin-console input[type="url"],
+body#email-admin-console input[type="password"],
+body#email-admin-console textarea,
+body#email-admin-console select,
+body#email-admin-console input[type="file"],
+body#email-admin-console textarea {
+	background-color: #000;
+	color: #fff;
+}
+
+
+body#email-admin-console div#queue div#container_queue-list-and-message-details {
+	display: table;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+
+body#email-admin-console div#queue div#container_queue-list-and-message-details div#queue_list,
+ body#email-admin-console div#queue div#container_queue-list-and-message-details div#queue_message-details {
+	display: table-cell;
+	vertical-align: top;
+}
+
+
+body#email-admin-console table {
+	border-collapse:separate;
+	border-spacing:1px;
+}
+
+body#email-admin-console table th {
+	padding:10px 20px;
+	text-align:center;
+	background-color: #000;
+}
+
+body#email-admin-console table tbody {
+	padding:0;
+	margin:0;
+	border-collapse:collapse;
+	border-spacing:0px;
+	background-color: #111;
+}
+
+body#email-admin-console table td {
+	padding:5px 10px;
+	text-align:center;
+}
+
+
+
+
+
+div#queue_message-details {
+	width: 31rem;
+}
+
+body#email-admin-console div.label {
+    width: 5rem;
+}
+
+body#email-admin-console div.control {
+    width: 20rem;
+}
+
+body#email-admin-console textarea {
+	height: 14.4rem;
+	padding: 0.6rem 1rem 0.4rem;
+}
+
+
+body#email-admin-console button {
+  display: inline-block;
+  float: none !important;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0.3rem 2rem;
+  margin: 0 !important;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  transition: background-color 250ms;
+  cursor: pointer;
+  color: #fff !important;
+  background-color: #003a63 !important;
+  width: 12rem;
+}
+
+
+body#email-admin-console button:hover {
+	text-decoration: none;
+	background-color: #001c30 !important;
+}
+
+body#email-admin-console a.anchor_email-deletion,
+body#email-admin-console a.anchor_email-archival,
+body#email-admin-console a.anchor_email-id {
+	color: #a6dbff;
+}
