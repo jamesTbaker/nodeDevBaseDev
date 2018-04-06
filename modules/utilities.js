@@ -1,51 +1,40 @@
 
-/*********************************************************************
-	PULL IN MODULES
-*********************************************************************/
+// ----- PULL IN MODULES
 
-// enable use of "moment" node module; this provides date and time utility functions
 const moment = require('moment');
 
-
-
-/*********************************************************************
-	DEFINE UTILITIES FUNCTIONS
-*********************************************************************/
+// ----- DEFINE UTILITIES FUNCTIONS
 
 module.exports = {
 
-	"ReturnFormattedDateTime": ({ dateTimeString, incomingFormat, returnFormat, determineYearDisplayDynamically }) => {
+	ReplaceAll: (needle, replacementNeddle, haystack) => haystack.replace(new RegExp(needle, 'g'), replacementNeddle),
+
+	ReturnFormattedDateTime: ({
+		incomingDateTimeString, incomingFormat, incomingReturnFormat, determineYearDisplayDynamically,
+	}) => {
 		// config locale
 		moment.locale('en');
 		moment.suppressDeprecationWarnings = true;
 		// set up vars
-		var retVal = '';
-		// if dateTimeString is set to 'nowLocal', reset to string representing current datetime
-		if (dateTimeString == 'nowLocal') {
-			dateTimeString = moment().format();
-		}
-		// if dateTimeString is set to 'nowUTC', reset to string representing current datetime
-		if (dateTimeString == 'nowUTC') {
-			dateTimeString = moment().format('YYYY-MM-DDTHH:mm:ssZ');
+		let returnValue = '';
+		let dateTimeStringToUse = '';
+		let returnFormatToUse = incomingReturnFormat;
+		// if incomingDateTimeString is set to 'nowLocal', reset to string representing current datetime
+		if (incomingDateTimeString === 'nowLocal') {
+			dateTimeStringToUse = moment().format();
+			// otherise, if incomingDateTimeString is 'nowUTC', use string representing current datetime
+		} else if (incomingDateTimeString === 'nowUTC') {
+			dateTimeStringToUse = moment().format('YYYY-MM-DDTHH:mm:ssZ');
+		} else {
+			dateTimeStringToUse = incomingDateTimeString;
 		}
 		// if need to determine year display dynamically
 		//		(essentially, we'll only display year if it's not the current year)
-		if (typeof(determineYearDisplayDynamically) != "undefined") {
-			if (determineYearDisplayDynamically == 1) {
-				let dateTimeStringYear = '';
+		if (typeof (determineYearDisplayDynamically) !== 'undefined') {
+			if (determineYearDisplayDynamically === 1) {
 				let displayYear = '';
-
-				// if there's an incoming format
-				if (incomingFormat != null) {
-					// use that to to parse dateTimeString's year
-					dateTimeStringYear = moment(dateTimeString, incomingFormat).format('YYYY');
-					// otherwise
-				} else {
-					// assume dateTimeString is in ISO format
-					dateTimeStringYear = moment(dateTimeString).format('YYYY');
-				}
-				// if dateTimeString's year != the current year
-				if (moment(dateTimeString).format('YYYY') != moment().format('YYYY')) {
+				// if dateTimeStringToUse's year != the current year
+				if (moment(dateTimeStringToUse).format('YYYY') !== moment().format('YYYY')) {
 					// set flag to display year
 					displayYear = 1;
 					// otherwise
@@ -53,79 +42,80 @@ module.exports = {
 					// set flag to not display year
 					displayYear = 0;
 				}
-				// if displayYear == 1 and returnFormat doesn't contain the year
-				if (displayYear == 1 && this.StrInStr({ "haystack": returnFormat, "needle": ", YYYY", "flag": 0 }) == false) {
-					// add the year to returnFormat
-					returnFormat += ', YYYY';
+				// if displayYear == 1 and incomingReturnFormat doesn't contain the year
+				if (displayYear === 1 && this.StrInStr({ haystack: incomingReturnFormat, needle: ', YYYY', flag: 0 }) === false) {
+					// add the year to returnFormatToUse
+					returnFormatToUse += ', YYYY';
 				}
-				// if displayYear == 0 and returnFormat DOES contain the year
-				if (displayYear == 0 && this.StrInStr({ "haystack": returnFormat, "needle": ", YYYY", "flag": 0 }) != false) {
+				// if displayYear == 0 and incomingReturnFormat DOES contain the year
+				if (displayYear === 0 && this.StrInStr({ haystack: incomingReturnFormat, needle: ', YYYY', flag: 0 }) !== false) {
 					// remove the year from returnFormat
-					returnFormat = ReplaceAll(', YYYY', '', returnFormat);
+					returnFormatToUse = module.exports.ReplaceAll(', YYYY', '', returnFormatToUse);
 				}
 			}
 		}
-		// if incoming format is null, assume dateTimeString is in iso format
+		// if incoming format is null, assume dateTimeStringToUse is in iso format
 		if (incomingFormat == null) {
-			// if return format is null
-			if (returnFormat == null) {
-				// use iso format to format dateTimeString
-				retVal += moment(dateTimeString, incomingFormat).format();
+			// if incomingReturnFormat is null
+			if (incomingReturnFormat == null) {
+				// use iso format to format dateTimeStringToUse
+				returnValue += moment(dateTimeStringToUse, incomingFormat).format();
 				// if return format is not null
 			} else {
-				// use return format to format dateTimeString
-				retVal += moment(dateTimeString, incomingFormat).format(returnFormat);
+				// use return format to format dateTimeStringToUse
+				returnValue += moment(dateTimeStringToUse, incomingFormat).format(returnFormatToUse);
 			}
-		// if incoming format is not null, use it to parse dateTimeString
+			// if incoming format is not null, use it to parse dateTimeStringToUse
 		} else {
-			// if incomingFormat contains ', YYYY' and dateTimeString doesn't end with that value and determineYearDisplayDynamically == 1
-			//  (E.g., incomingFormat == 'MMMM D, YYYY' and dateTimeString is only 'February 14'
-			if (this.StrInStr({ "haystack": incomingFormat, "needle": ", YYYY" }) != false && this.StrInStr({ "haystack": dateTimeString, "needle": ", 2" }) == false && typeof(determineYearDisplayDynamically) != "undefined" && determineYearDisplayDynamically == 1) {
+			/** if incomingFormat contains ', YYYY' and dateTimeStringToUse doesn't end with that 
+			 * value and determineYearDisplayDynamically == 1
+			 * (E.g., incomingFormat == 'MMMM D, YYYY' and dateTimeStringToUse is only 'February 14'
+ 			 */
+			if (this.StrInStr({ haystack: incomingFormat, needle: ', YYYY' }) !== false && this.StrInStr({ haystack: dateTimeStringToUse, needle: ', 2' }) === false && typeof (determineYearDisplayDynamically) !== 'undefined' && determineYearDisplayDynamically === 1) {
 				// augment with the current year
 				//  (since determineYearDisplayDynamically == 1, should be safe assumption (until it isn't))
-				dateTimeString += ', ' + moment().format('YYYY');
+				dateTimeStringToUse += `, ${moment().format('YYYY')}`;
 			}
 			// if return format is null
-			if (returnFormat == null) {
-				// use iso format to format dateTimeString
-				retVal += moment(dateTimeString, incomingFormat).format();
-			// if return format is not null
+			if (incomingFormat == null) {
+				// use iso format to format dateTimeStringToUse
+				returnValue += moment(dateTimeStringToUse, incomingFormat).format();
+				// if return format is not null
 			} else {
-				// use return format to format dateTimeString
-				retVal += moment(dateTimeString, incomingFormat).format(returnFormat);
+				// use return format to format dateTimeStringToUse
+				returnValue += moment(dateTimeStringToUse, incomingFormat).format(returnFormatToUse);
 			}
 		}
-		return retVal;
+		return returnValue;
 	},
 
-	
-
-	/*
-		description: given an array of arrays in which the first array contains the keys and the other arrays contain values,
-		return an array of objects with the values labeled with the keys; see illustration below
-
-		initial use case: parsing an Excel worksheet results in an array of arrays, but we need an array of objects 
-		to store in Mongo
-
-		given: [ [ "foo", "bar", "woot" ], [ 2, 4, 6 ], [ 102, 104, 106 ] ]
-		return: [
-			{
-				"foo": 2,
-				"bar": 4,
-				"woot": 6
-			}, {
-				"foo": 102,
-				"bar": 104,
-				"woot": 106
-			}
-		]
-	*/
-	"ReturnArrayOfArraysWithFirstArrayHeaderAsArrayOfMappedJSONObjects": (arrayOfArrays) => {
+	/**
+	 * description: given an array of arrays in which the first array contains the keys and the
+	 * other arrays contain values, return an array of objects with the values labeled with the
+	 * keys; see illustration below
+	 * 
+	 * initial use case: parsing an Excel worksheet results in an array of arrays, but we 
+	 * need an array of objects to store in Mongo
+	 * 
+	 * given: [ [ "foo", "bar", "woot" ], [ 2, 4, 6 ], [ 102, 104, 106 ] ]
+	 * return: [
+	 * 		{
+	 * 			"foo": 2,
+	 * 			"bar": 4,
+	 * 			"woot": 6
+	 * 		},{
+	 * 			"foo": 102,
+	 * 			"bar": 104,
+	 * 			"woot": 106
+	 * 		}
+	 * ]
+	 */
+	ReturnArrayOfArraysWithFirstArrayHeaderAsArrayOfMappedJSONObjects: (arrayOfArrays) => {
 		// set up vars
-		var arrayOfObjects = [];
-		var keysContent = [];
+		const arrayOfObjects = [];
+		let keysContent = [];
 		// for each array in the array of arrays
-		for (const [primaryIndex, primaryValue] of arrayOfArrays.entries()) {
+		arrayOfArrays.forEach((primaryItem, primaryIndex) => {
 			if (primaryIndex === 0) {
 				const primaryElementContent = arrayOfArrays[primaryIndex];
 				keysContent = primaryElementContent;
@@ -133,42 +123,43 @@ module.exports = {
 				const primaryElementContent = arrayOfArrays[primaryIndex];
 				const primaryElementContentAsJSONObject = {};
 
-				for (const [secondaryIndex, secondaryValue] of primaryElementContent.entries()) {
+				primaryElementContent.forEach((secondaryItem, secondaryIndex) => {
 					const secondaryElementContent = primaryElementContent[secondaryIndex];
 					primaryElementContentAsJSONObject[keysContent[secondaryIndex]] = secondaryElementContent;
-				}
+				});
 				arrayOfObjects.push(primaryElementContentAsJSONObject);
 			}
-		}
+		});
+
+		return arrayOfObjects;
 	},
 
-	
-
- 	"StrInStr": ({ haystack, needle, flag }) => {
-
-		var position = 0;
-		haystack = haystack + '';
-		needle = needle + '';
-		position = haystack.indexOf(needle);
+	StrInStr: ({ incomingHaystack, incomingNeedle, flag }) => {
+		// let position = 0;
+		const haystackToUse = `${incomingHaystack}`;
+		const needleToUse = `${incomingNeedle}`;
+		const position = haystackToUse.indexOf(needleToUse);
+		let returnValue = 0;
 
 		if (position === -1) {
 			return false;
-		} else {
-			if (typeof(flag) != "undefined") {
-				if (flag === 1) {
-					// return from beginning of string to beginning of needle
-					return haystack.substr(0, position);
-				} else if (flag === 2) {
-					// return ?
-					return haystack.slice(needle.length);
-				} else if (flag === 3) {
-					// return from needle to end of string, needle-exclusive
-					return haystack.slice(position + needle.length);
-				}
-			} else {
-				// return from needle to end of string, needle-inclusive
-				return haystack.slice(position);
-			}
 		}
-	}
+		if (typeof (flag) !== 'undefined') {
+			if (flag === 1) {
+				// return from beginning of string to beginning of needleToUse
+				returnValue = haystackToUse.substr(0, position);
+			} else if (flag === 2) {
+				// return ?
+				returnValue = haystackToUse.slice(needleToUse.length);
+			} else if (flag === 3) {
+				// return from needleToUse to end of string, needleToUse-exclusive
+				returnValue = haystackToUse.slice(position + needleToUse.length);
+			}
+		} else {
+			// return from needleToUse to end of string, needleToUse-inclusive
+			returnValue = haystackToUse.slice(position);
+		}
+
+		return returnValue;
+	},
 };

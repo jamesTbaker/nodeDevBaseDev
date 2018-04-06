@@ -1,8 +1,7 @@
 extends htmlHead
 
 block content
-	div#screen_index
-		div#message
-			a(href="/")
-				h1= title
-			p Bacon Cat works here. This is his glamour shot.
+	script(src="https://unpkg.com/react@16.0.0/umd/react.production.min.js")
+	script(src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js")
+	script(src="/js/reactApp.js")
+	div#app
